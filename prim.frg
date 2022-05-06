@@ -43,12 +43,6 @@ pred connected {
     all disj n1, n2 : Node | reachable[n1, n2, neighbors]
 }
 
-// makes directed graphs a bit more interesting: no two nodes each connect to each other
-pred noMutualEdges {
-    all n1, n2 : Node | {
-        n2 in n1.neighbors implies not n1 in n2.neighbors
-    }
-}
 
 // makes a graph undirected--every neighbor relationship is reciprocated
 pred undirected {
@@ -62,22 +56,6 @@ pred noSelfNeighbor {
     all n1: Node | not n1 in n1.neighbors
 }
 
-// makes the graph a tree
-pred tree {
-    // there is one node such that every other node is reachable from that node
-    one n: Node | {
-        all n2: Node | n != n2 implies {
-            reachable[n2, n, neighbors]
-            // each node that's not the top of the tree has some parent
-            one n3: Node | {
-                n2 in n3.neighbors
-            }
-            // no node connects to the top
-            n not in n2.neighbors
-        }
-    }
-    noSelfNeighbor
-}
 
 // makes every weight positive
 pred positiveWeights {
@@ -111,6 +89,7 @@ pred init[s: State] {
     no s.treeEdges
 }
 
+// TODO: modify so it *can* attempt to work on directed/unconnected graphs, so we can show it failing
 pred canTransition[pre: State, post: State] {
     // post is pre's next
     pre.next = post
