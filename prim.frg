@@ -62,6 +62,12 @@ pred noSelfNeighbor {
     all n1: Node | not n1 in n1.neighbors
 }
 
+// makes a graph directed--no neighbor relationship is reciprocated
+pred directed {
+    noMutualEdges
+    noSelfNeighbor
+}
+
 // makes the graph a tree
 pred tree {
     // there is one node such that every other node is reachable from that node
@@ -198,6 +204,65 @@ pred smallWeights {
 // -copy some tests from dijkstra, like that a tree is found if and only if the graph is connected
 // -treeEdges always actually forms a tree 
 // more...
+
+test expect {
+    vacuous: {wellformed} is sat
+    vacuousWithPrim: {
+        wellformed
+        TransitionStates
+    } is sat
+    /*directedFails: {
+        wellformed
+        TransitionStates
+        directed
+        some n: Node | not reachable[n, Traverse.start, neighbors]
+    } is unsat
+    negEdgeFails: {
+        wellformed
+        TransitionStates
+        some disj n1, n2: Node | getEdgeWeight[n1, n2] < 0
+    } is unsat
+    treeEdgesIsTree: {
+        wellformed
+        TransitionStates
+        final
+        some s: State | final[s] implies {
+            all n: Node | n in final[s].visited implies {not reachable[n, n, edges]}
+        }
+    } is sat*/
+    /*travelToDisconnectedImpossible: {
+        wellformed
+        positiveWeights
+        // no incoming edges to some node that is the ending node
+        some n: Node | {
+            all n2: Node | n != n2 implies not edgeExists[n, n2]
+            Traverse.start != n
+        }
+        TransitionStates
+    } for {next is linear} is unsat*/
+    numVisitedIncreasesByZeroOrOne: {
+        wellformed
+        positiveWeights
+        TransitionStates
+        not (all s1, s2: State | s1.next = s2 implies {
+            ((#(s1.visited)) = (#(s2.visited))) or
+            (add[(#(s1.visited)), 1] = (#(s2.visited)))
+        })
+    } for {next is linear} is unsat
+    pathFoundIffReachable: {
+        wellformed
+        TransitionStates
+        not(all n: Node | {
+            // a path will be found if and only if the node is the start or it's reachable
+            (reachable[n, Traverse.start, neighbors] or n = Traverse.start) iff {
+                some s: State | {
+                    n in s.visited
+                }
+            }
+        })
+    } for {next is linear} is unsat
+}
+
 
 run {
     undirected
