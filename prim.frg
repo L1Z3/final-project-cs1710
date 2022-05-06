@@ -60,7 +60,7 @@ pred noSelfNeighbor {
     all n1: Node | not n1 in n1.neighbors
 }
 
-// makes a graph directed--no neighbor relationship is reciprocated
+// special case of directed--no neighbor relationship is reciprocated
 pred directed {
     all disj n1, n2: Node | n1 in n2.neighbors iff n2 not in n1.neighbors
 }
@@ -195,20 +195,32 @@ pred smallWeights {
     }
 }
 
+// TODO: check this works as intended
+pred treeEdgesIsTree[s: State] { 
+    // the number of edges is one less than the number of nodes 
+    let nodesInTreeEdges = {n: Node | n in (s.treeEdges).Node.Int or n in Int.(Node.(s.treeEdges))} | { 
+        #(s.treeEdges) = #nodesInTreeEdges - 1 
+    } 
+} 
+
 // TODO: testing for Prim's
 // Testing ideas:
 // -Prim's only works for undirected graphs. Give tests showing it fails for directed graphs.
-// -show other failing cases, like negative edge weights
+// -show other failing cases
+// -show that negative weights work, unlike dijkstra's
 // -copy some tests from dijkstra, like that a tree is found if and only if the graph is connected
 // -treeEdges always actually forms a tree 
 // more...
 
+// TODO: double check current tests
 test expect {
     vacuous: {wellformed} is sat
     vacuousWithPrim: {
         wellformed
+        undirected
         TransitionStates
     } is sat
+    // TODO: check this and make sure it means what we think
     directedFails: {
         wellformed
         TransitionStates
@@ -217,17 +229,18 @@ test expect {
         some f: State | {
             final[f] and {all n: Node | n in f.visited}
         }
-    } is unsat
-    treeEdgesIsTree: {
-        wellformed
-        TransitionStates
-        some s: State | final[s] implies {
-            all n: Node | n in s.visited implies {not reachable[n, n, treeNeighbors[s]]}
-        }
-    } is sat
+    } for {next is linear} is unsat
+    treeEdgesIsTreeTest: {
+        (wellformed and
+        undirected and
+        TransitionStates) implies
+        {all s: State | final[s] implies {
+            treeEdgesIsTree[s]
+        }}
+    } for {next is linear} is theorem
     travelToDisconnectedImpossible: {
         wellformed
-        positiveWeights
+        undirected
         // no incoming edges to some node that is the ending node
         some n: Node | {
             all n2: Node | n != n2 implies not edgeExists[n, n2] and not edgeExists[n2, n]
@@ -240,7 +253,7 @@ test expect {
     } for {next is linear} is unsat
     numVisitedIncreasesByZeroOrOne: {
         wellformed
-        positiveWeights
+        undirected
         TransitionStates
         not (all s1, s2: State | s1.next = s2 implies {
             ((#(s1.visited)) = (#(s2.visited))) or
@@ -249,6 +262,7 @@ test expect {
     } for {next is linear} is unsat
     pathFoundIffReachable: {
         wellformed
+        undirected
         TransitionStates
         not(all n: Node | {
             // a path will be found if and only if the node is the start or it's reachable
