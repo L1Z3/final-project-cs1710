@@ -1,0 +1,105 @@
+{
+  "hidden": {
+    "builtinDisconnected": true
+  },
+  "nodes": [
+    {
+      "shape": {
+        "shape": "rectangle",
+        "width": 100,
+        "height": 60
+      },
+      "styles": {
+        "node": {
+          "stroke": "#333",
+          "strokeWidth": 1,
+          "fill": "#ffffff"
+        },
+        "label": {
+          "fontFamily": "monospace",
+          "fontSize": "14px",
+          "textAnchor": "middle",
+          "userSelect": "none",
+          "fill": "#333"
+        }
+      },
+      "props": {
+        "label": {
+          "dy": "0.33em"
+        }
+      },
+      "targets": [
+        "*"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "curve": {
+        "type": "bspline"
+      },
+      "styles": {
+        "edge": {
+          "stroke": "#333",
+          "strokeWidth": 1,
+          "fill": "none"
+        },
+        "label": {
+          "fontFamily": "monospace",
+          "fontSize": "12px",
+          "textAnchor": "middle",
+          "userSelect": "none"
+        }
+      },
+      "targets": [
+        "*"
+      ]
+    },
+    {
+      "targets": [
+        {
+          "relation": "State<:treeEdges"
+        }
+      ],
+      "styles": {
+        "edge": {
+          "stroke": "#4400ff"
+        }
+      }
+    },
+    {
+      "targets": [
+        {
+          "relation": "Node<:edges"
+        }
+      ],
+      "styles": {
+        "edge": {
+          "stroke": "#c4c4c4"
+        }
+      }
+    },
+    {
+      "targets": [
+        {
+          "relation": "Traverse<:start"
+        }
+      ],
+      "asAttribute": true
+    },
+    {
+      "targets": [
+        {
+          "relation": "State<:visited"
+        }
+      ],
+      "asAttribute": true
+    }
+  ],
+  "projections": [
+    {
+      "type": "State",
+      "time": true
+    }
+  ]
+}

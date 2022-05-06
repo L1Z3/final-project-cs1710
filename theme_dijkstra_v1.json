@@ -1,0 +1,120 @@
+{
+  "hidden": {
+    "builtinDisconnected": true
+  },
+  "nodes": [
+    {
+      "shape": {
+        "shape": "rectangle",
+        "width": 100,
+        "height": 60
+      },
+      "styles": {
+        "node": {
+          "stroke": "#333",
+          "strokeWidth": 1,
+          "fill": "#ffffff"
+        },
+        "label": {
+          "fontFamily": "monospace",
+          "fontSize": "14px",
+          "textAnchor": "middle",
+          "userSelect": "none",
+          "fill": "#333"
+        }
+      },
+      "props": {
+        "label": {
+          "dy": "0.33em"
+        }
+      },
+      "targets": [
+        "*"
+      ]
+    },
+    {
+      "targets": [
+        {
+          "type": "Int"
+        }
+      ],
+      "styles": {
+        "node": {
+          "stroke": "#ffffff"
+        },
+        "label": {
+          "fontSize": "0"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "curve": {
+        "type": "bspline"
+      },
+      "styles": {
+        "edge": {
+          "stroke": "#333",
+          "strokeWidth": 1,
+          "fill": "none"
+        },
+        "label": {
+          "fontFamily": "monospace",
+          "fontSize": "12px",
+          "textAnchor": "middle",
+          "userSelect": "none"
+        }
+      },
+      "targets": [
+        "*"
+      ]
+    },
+    {
+      "targets": [
+        {
+          "relation": "State<:pathLengths"
+        }
+      ],
+      "asAttribute": true
+    },
+    {
+      "targets": [
+        {
+          "relation": "State<:visited"
+        }
+      ],
+      "asAttribute": true
+    },
+    {
+      "targets": [
+        {
+          "relation": "State<:paths"
+        }
+      ],
+      "asAttribute": true
+    },
+    {
+      "targets": [
+        {
+          "relation": "Traverse<:start"
+        }
+      ],
+      "asAttribute": true
+    },
+    {
+      "targets": [
+        {
+          "relation": "Traverse<:end"
+        }
+      ],
+      "asAttribute": true
+    }
+  ],
+  "projections": [
+    {
+      "type": "State",
+      "time": true
+    }
+  ]
+}
