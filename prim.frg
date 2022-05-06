@@ -33,6 +33,10 @@ fun neighbors: set Node -> Node {
     {n1, n2: Node | some w: Int | n1 -> w -> n2 in edges}
 }
 
+fun treeNeighbors[s: State]: set Node -> Node {
+    {n1, n2: Node | some w: Int | n1 -> w -> n2 in s.treeEdges}
+}
+
 // get the weight of the edge going from n1 to n2
 fun getEdgeWeight(n1: Node, n2: Node): lone Int {
     {i: Int | n1 -> i -> n2 in edges}
@@ -58,8 +62,7 @@ pred noSelfNeighbor {
 
 // makes a graph directed--no neighbor relationship is reciprocated
 pred directed {
-    noMutualEdges
-    noSelfNeighbor
+    all disj n1, n2: Node | n1 in n2.neighbors iff n2 not in n1.neighbors
 }
 
 // makes the graph a tree
@@ -206,35 +209,35 @@ test expect {
         wellformed
         TransitionStates
     } is sat
-    /*directedFails: {
+    directedFails: {
         wellformed
         TransitionStates
         directed
-        some n: Node | not reachable[n, Traverse.start, neighbors]
-    } is unsat
-    negEdgeFails: {
-        wellformed
-        TransitionStates
-        some disj n1, n2: Node | getEdgeWeight[n1, n2] < 0
+        some n: Node | not reachable[n, Traverse.start, neighbors] and Traverse.start != n
+        some f: State | {
+            final[f] and {all n: Node | n in f.visited}
+        }
     } is unsat
     treeEdgesIsTree: {
         wellformed
         TransitionStates
-        final
         some s: State | final[s] implies {
-            all n: Node | n in final[s].visited implies {not reachable[n, n, edges]}
+            all n: Node | n in s.visited implies {not reachable[n, n, treeNeighbors[s]]}
         }
-    } is sat*/
-    /*travelToDisconnectedImpossible: {
+    } is sat
+    travelToDisconnectedImpossible: {
         wellformed
         positiveWeights
         // no incoming edges to some node that is the ending node
         some n: Node | {
-            all n2: Node | n != n2 implies not edgeExists[n, n2]
+            all n2: Node | n != n2 implies not edgeExists[n, n2] and not edgeExists[n2, n]
             Traverse.start != n
         }
         TransitionStates
-    } for {next is linear} is unsat*/
+        some f: State | {
+            all n: Node | n in f.visited
+        }
+    } for {next is linear} is unsat
     numVisitedIncreasesByZeroOrOne: {
         wellformed
         positiveWeights
