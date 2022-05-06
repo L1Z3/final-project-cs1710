@@ -157,6 +157,14 @@ pred smallWeights {
     }
 }
 
+// TODO: check this works as intended
+pred treeEdgesIsTree[s: State] { 
+    // the number of edges is one less than the number of nodes 
+    let nodesInTreeEdges = {n: Node | n in (s.treeEdges).Node.Int or n in Int.(Node.(s.treeEdges))} | { 
+        #(s.treeEdges) = subtract[multiply[#nodesInTreeEdges, 2], 2]
+    } 
+} 
+
 // TODO: testing for Kruskal's
 // Testing ideas:
 // -Kruskal's only works for undirected graphs. Give tests showing it fails for directed graphs.
@@ -175,29 +183,30 @@ test expect {
         wellformed
         TransitionStates
         directed
-        //some n: Node | not reachable[n, Traverse.start, neighbors] and Traverse.start != n
+        some n: Node | all n2: Node | n2 != n implies {not edgeExists[n, n2] and not edgeExists[n2, n]}
         some f: State | {
-            final[f] and {all n: Node | n in f.visited}
+            final[f] and {all n: Node | some n2: Node | some w: Int | n2 -> w -> n in f.treeEdges}
         }
     } is unsat
-    treeEdgesIsTree: {
-        wellformed
-        TransitionStates
-        some s: State | final[s] implies {
-            all n: Node | n in s.visited implies {not reachable[n, n, treeNeighbors[s]]}
-        }
-    } is sat
+    treeEdgesIsTreeTest: {
+        (wellformed and
+        undirected and
+        TransitionStates) implies
+        {all s: State | final[s] implies {
+            treeEdgesIsTree[s]
+        }}
+    } for {next is linear} is sat
+    
     travelToDisconnectedImpossible: {
         wellformed
         positiveWeights
         // no incoming edges to some node that is the ending node
         some n: Node | {
             all n2: Node | n != n2 implies not edgeExists[n, n2] and not edgeExists[n2, n]
-            //Traverse.start != n
         }
         TransitionStates
         some f: State | {
-            all n: Node | n in f.visited
+            {all n: Node | some n2: Node | some w: Int | n2 -> w -> n in f.treeEdges}
         }
     } for {next is linear} is unsat
     numVisitedIncreasesByZeroOrOne: {
@@ -205,18 +214,17 @@ test expect {
         positiveWeights
         TransitionStates
         not (all s1, s2: State | s1.next = s2 implies {
-            ((#(s1.visited)) = (#(s2.visited))) or
-            (add[(#(s1.visited)), 1] = (#(s2.visited)))
+            #{s1.treeEdges} = #{s2.treeEdges} or
+            (add[#{s1.treeEdges}, 2] = (#{s2.treeEdges}))
         })
     } for {next is linear} is unsat
     pathFoundIffReachable: {
         wellformed
         TransitionStates
-        not(all n: Node | {
-            // a path will be found if and only if the node is the start or it's reachable
-            //(reachable[n, Traverse.start, neighbors] or n = Traverse.start) iff {
+        not(all disj n1, n2: Node | {
+            reachable[n2, n1, neighbors] implies {
                 some s: State | {
-                    n in s.visited
+                    some n3: Node | some w: Int | n3 -> w -> n2 in s.treeEdges
                 }
             }
         })

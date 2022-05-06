@@ -47,7 +47,6 @@ pred connected {
     all disj n1, n2 : Node | reachable[n1, n2, neighbors]
 }
 
-
 // makes a graph undirected--every neighbor relationship is reciprocated
 pred undirected {
     all n1, n2 : Node | {
