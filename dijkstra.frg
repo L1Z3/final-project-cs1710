@@ -267,7 +267,7 @@ example validTransition is {some pre, post: State | canTransition[pre, post]} fo
             `S1 -> `Node0 -> 0 -> `Node0 +
             `S1 -> `Node1 -> 0 -> `Node0 +
             `S1 -> `Node1 -> 1 -> `Node1
-    pathLengths = `S0 -> `Node0 -> 0+
+    pathLengths = `S0 -> `Node0 -> 0 +
                 `S1 -> `Node0 -> 0 +
                 `S1 -> `Node1 -> 4
 }

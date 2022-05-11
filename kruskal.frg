@@ -161,9 +161,140 @@ pred smallWeights {
 pred treeEdgesIsTree[s: State] { 
     // the number of edges is one less than the number of nodes 
     let nodesInTreeEdges = {n: Node | n in (s.treeEdges).Node.Int or n in Int.(Node.(s.treeEdges))} | { 
-        #(s.treeEdges) = subtract[multiply[#nodesInTreeEdges, 2], 2]
+        (#(s.treeEdges) = subtract[multiply[#nodesInTreeEdges, 2], 2]) or 
+        (#s.treeEdges = 0 and #nodesInTreeEdges = 0)
     } 
 } 
+
+// Example blocks
+// check a sample transition
+example validTransition is {some pre, post: State | canTransition[pre, post]} for {
+    State = `S0 + `S1
+    Node = `Node0 + `Node1
+    edges = `Node0 -> 4 -> `Node1
+    next = `S0 -> `S1
+}
+
+// if doesn't follow shortest path, fails transitions
+example chooseWrongPath is not {some pre, post: State | canTransition[pre, post]} for {
+    State = `S0 + `S1
+    Node = `Node0 + `Node1 + `Node2 + `Node3
+    edges = `Node0 -> 1 -> `Node1 +
+            `Node0 -> 7 -> `Node2 +
+            `Node1 -> 1 -> `Node3 +
+            `Node2 -> 7 -> `Node1 +
+            `Node2 -> 7 -> `Node3
+    next = `S0 -> `S1
+    treeEdges = `S1 -> {`Node2 -> 7 -> `Node1}
+}
+
+// can complete a zigzag graph
+example completesZigzag is TransitionStates for {
+    State = `S0 + `S1 + `S2 + `S3
+    Node = `Node0 + `Node1 + `Node2 + `Node3
+    edges = `Node0 -> 4 -> `Node1 +
+            `Node0 -> 8 -> `Node2 +
+            `Node1 -> 8 -> `Node3 +
+            `Node1 -> 1 -> `Node2 +
+            `Node2 -> 1 -> `Node1 +
+            `Node2 -> 3 -> `Node3
+    next = `S0 -> `S1 +
+        `S1 -> `S2 +
+        `S2 -> `S3
+    #Int = 5
+}
+
+// can complete wheel graph from center
+example completesWheelFromCenter is TransitionStates for {
+    State = `S0 + `S1 + `S2 + `S3 + `S4
+    Node = `Node0 + `Node1 + `Node2 + `Node3 + `Node4
+    edges = `Node0 -> 1 -> `Node1 +
+            `Node0 -> 1 -> `Node2 +
+            `Node0 -> 1 -> `Node3 +
+            `Node0 -> 1 -> `Node4 +
+            `Node1 -> 1 -> `Node2 +
+            `Node2 -> 1 -> `Node3 +
+            `Node3 -> 1 -> `Node4 +
+            `Node4 -> 1 -> `Node1
+    next = `S0 -> `S1 + 
+    `S1 -> `S2 + 
+    `S2 -> `S3 + 
+    `S3 -> `S4
+}
+
+// can complete wheel graph from edge
+example completesWheelFromEdge is TransitionStates for {
+    State = `S0 + `S1 + `S2 + `S3 + `S4
+    Node = `Node0 + `Node1 + `Node2 + `Node3 + `Node4
+    edges = `Node0 -> 1 -> `Node1 +
+            `Node0 -> 1 -> `Node2 +
+            `Node0 -> 1 -> `Node3 +
+            `Node0 -> 1 -> `Node4 +
+            `Node1 -> 1 -> `Node2 +
+            `Node2 -> 1 -> `Node3 +
+            `Node3 -> 1 -> `Node4 +
+            `Node4 -> 1 -> `Node1
+    next = `S0 -> `S1 +
+        `S1 -> `S2 +
+        `S2 -> `S3 + 
+        `S3 -> `S4
+}
+
+// no edges fails
+example noEdges is not TransitionStates for {
+    State = `S0
+    Node = `Node0 + `Node1 + `Node2 + `Node3
+}
+
+// start state is final passes
+example startingIsFinal is TransitionStates for {
+    State = `S0
+    Node = `Node0
+}
+
+// every node is connected
+example allConnectedNodes is TransitionStates for {
+    State = `S0 + `S1 + `S2
+    Node = `Node0 + `Node1 + `Node2
+    edges = `Node0 -> 1 -> `Node1 +
+            `Node0 -> 1 -> `Node2 +
+            `Node1 -> 1 -> `Node0 +
+            `Node1 -> 1 -> `Node2 +
+            `Node2 -> 1 -> `Node0 +
+            `Node2 -> 1 -> `Node1
+    next = `S0 -> `S1 +
+        `S1 -> `S2
+}
+
+// negative weights passes
+example negativeWeights is TransitionStates for {
+    State = `S0 + `S1 + `S2
+    Node = `Node0 + `Node1 + `Node2
+    edges = `Node0 -> -1 -> `Node1 +
+            `Node0 -> -1 -> `Node2 +
+            `Node1 -> -1 -> `Node0 +
+            `Node1 -> -1 -> `Node2 +
+            `Node2 -> -1 -> `Node0 +
+            `Node2 -> -1 -> `Node1
+    next = `S0 -> `S1 +
+        `S1 -> `S2
+}
+
+// disconnected node fails nice predicate
+example disconnectedNode is not nice for {
+    State = `S0 + `S1 + `S2 + `S3
+    Node = `Node0 + `Node1 + `Node2 + `Node3 + `Node4
+    edges = `Node0 -> 4 -> `Node1 +
+            `Node0 -> 8 -> `Node2 +
+            `Node1 -> 8 -> `Node3 +
+            `Node1 -> 1 -> `Node2 +
+            `Node2 -> 1 -> `Node1 +
+            `Node2 -> 3 -> `Node3
+    next = `S0 -> `S1 +
+        `S1 -> `S2 +
+        `S2 -> `S3
+    #Int = 5
+}
 
 // TODO: testing for Kruskal's
 // Testing ideas:
