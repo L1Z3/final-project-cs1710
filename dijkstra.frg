@@ -164,7 +164,6 @@ pred canTransition[pre: State, post: State] {
                 pre.paths[n] = post.paths[n]
             }
             post.pathLengths[newNode] = minNewPathLength
-            // TODO: does oldNode here need to be modified like in Prim?
             let oldNode = {n: Node | some i: Int | n -> i -> newNode in edgesCreatingMinPath} | 
             let newPath = post.paths[newNode] |
             let oldPath = pre.paths[oldNode] | {
@@ -235,7 +234,6 @@ pred Explore {
             (reachable[post2, finalState, next] and post2 = post1.next) implies {doNothing[post1, post2]}
         }
         
-        // TODO: do we need to make the same change here as we did to TransitionStates?
         -- link init to final state via next
         reachable[finalState, initState, next]
 
@@ -616,4 +614,5 @@ run {
     TransitionStates
     (#edges) < 15
     smallWeights
-} for exactly 5 Node, exactly 5 Int, exactly 5 State for {next is linear}
+    Traverse.start != Traverse.end
+} for exactly 5 Node, exactly 6 Int, exactly 5 State for {next is linear}

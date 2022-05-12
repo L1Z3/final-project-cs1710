@@ -73,7 +73,6 @@ pred wellformed {
             n1 -> i -> n2 in edges
         }
     }
-    // TODO: do we need to enforce that the edges_tree is a subset of the edges in the graph?
 }
 
 // determines whether there is an edge from n1 to n2
@@ -102,7 +101,6 @@ pred canTransition[pre: State, post: State] {
     let edgesWithMinWeight = {n1: Node, i: Int, n2: Node | (n1 -> i -> n2 in candidates) and i = minEdgeWeight} | {
         some disj n1, n2: Node | {
             // we assume undirectedness here
-            // TODO: just use minEdgeWeight here in other algorithms as well?
             (n1 -> minEdgeWeight -> n2) in edgesWithMinWeight
             pre.treeEdges + (n1 -> minEdgeWeight -> n2) 
                           + (n2 -> minEdgeWeight -> n1) 
@@ -156,7 +154,6 @@ pred smallWeights {
     }
 }
 
-// TODO: check this works as intended
 pred treeEdgesIsTree[s: State] { 
     // the number of edges is one less than the number of nodes 
     let nodesInTreeEdges = {n: Node | n in (s.treeEdges).Node.Int or n in Int.(Node.(s.treeEdges))} | { 
@@ -295,14 +292,6 @@ example disconnectedNode is not nice for {
     #Int = 5
 }
 
-// TODO: testing for Kruskal's
-// Testing ideas:
-// -Kruskal's only works for undirected graphs. Give tests showing it fails for directed graphs.
-// -show other failing cases, like negative edge weights
-// -copy some tests ideas from dijkstra, like that a tree is found if and only if the graph is connected
-// -treeEdges always actually forms a tree 
-// more...
-
 test expect {
     vacuous: {wellformed} is sat
     vacuousWithPrim: {
@@ -371,4 +360,4 @@ run {
     // temporary
     #{i: Int | {some n1, n2: Node | n1 -> i -> n2 in edges}} > 4
     // smallWeights
-} for exactly 5 Node, exactly 5 Int, 15 State for {next is linear}
+} for exactly 5 Node, exactly 6 Int, 15 State for {next is linear}

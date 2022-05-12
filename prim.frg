@@ -8,8 +8,7 @@ sig State {
     // nodes that have been visited in the current state
     visited: set Node,
     // set of edges that have been added to the tree in the current state
-    // TODO: for some reason this displays as a bidirectional arrow in Sterling, which is good.
-            // find a way to do this for edges as well when using undirected graphs.
+    // for some reason this displays as a bidirectional arrow in Sterling, which is good.
     treeEdges: set Node -> Int -> Node
 }
 
@@ -118,7 +117,6 @@ pred init[s: State] {
     no s.treeEdges
 }
 
-// TODO: modify so it *can* attempt to work on directed/unconnected graphs, so we can show it failing
 pred canTransition[pre: State, post: State] {
     // post is pre's next
     pre.next = post
@@ -148,16 +146,6 @@ pred final[s: State] {
     all n: Node | reachable[n, Traverse.start, neighbors] implies {
         n in s.visited
     }
-
-    // TODO: is an analogy to this line needed?
-    // all pre: State | reachable[s, pre, next] implies not (Traverse.end in pre.visited)
-
-    // TODO: is something like this needed?
-    // all pre: State | reachable[s, pre, next] implies not {
-    //     all n: Node | reachable[n, Traverse.start, neighbors] implies {
-    //         n in pre.visited
-    //     }
-    // }
 }
 
 pred doNothing[pre: State, post: State] {
@@ -199,7 +187,6 @@ pred smallWeights {
     }
 }
 
-// TODO: check this works as intended
 pred treeEdgesIsTree[s: State] { 
     // the number of edges is one less than the number of nodes 
     let nodesInTreeEdges = {n: Node | n in (s.treeEdges).Node.Int or n in Int.(Node.(s.treeEdges))} | { 
@@ -351,16 +338,6 @@ example disconnectedNode is not nice for {
 }
 
 
-// TODO: testing for Prim's
-// Testing ideas:
-// -Prim's only works for undirected graphs. Give tests showing it fails for directed graphs.
-// -show other failing cases
-// -show that negative weights work, unlike dijkstra's
-// -copy some tests from dijkstra, like that a tree is found if and only if the graph is connected
-// -treeEdges always actually forms a tree 
-// more...
-
-// TODO: double check current tests
 test expect {
     vacuous: {wellformed} is sat
     vacuousWithPrim: {
@@ -368,7 +345,6 @@ test expect {
         undirected
         TransitionStates
     } is sat
-    // TODO: check this and make sure it means what we think
     directedFails: {
         wellformed
         TransitionStates
@@ -424,12 +400,13 @@ test expect {
     } for {next is linear} is unsat
 }
 
+
 run {
     undirected
     wellformed
     nice
     TransitionStates
-    (#edges) < 30
+    (#edges) < 20
     // temporary
     // #{i: Int | {some n1, n2: Node | n1 -> i -> n2 in edges}} = 6
     // smallWeights
