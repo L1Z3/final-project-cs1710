@@ -51,7 +51,7 @@ function getyPos(d) {
 }
 
 function color(d) {
-    return "#0495c2";
+    return "#64bdd9";
 }
 
 function drawEdges() {
@@ -67,11 +67,16 @@ function drawEdges() {
             .attr("y1",ymap.get(n1))  
             .attr("x2",xmap.get(n2))
             .attr("y2",ymap.get(n2))
-            .attr("stroke","#0495c2")
+            .attr("stroke","#abd2de")
             .attr("stroke-width",3)
             .attr('marker-end', 'url(#arrow)');
-        avgx = (xmap.get(n1) + xmap.get(n2))/2 -10
-        avgy = (ymap.get(n1) + ymap.get(n2))/2 -10
+    }
+    for (let i = 0; i < edges.length; i++){
+        n1 = edges[i]._atoms[0]._id
+        n2 = edges[i]._atoms[2]._id
+        weight = edges[i]._atoms[1]._id
+        avgx = (xmap.get(n1) + xmap.get(n2))/2 -11
+        avgy = (ymap.get(n1) + ymap.get(n2))/2 -11
         d3.select(svg)
             .append("text")
             .attr("x", avgx)
@@ -83,43 +88,46 @@ function drawEdges() {
 
 curState = 0
 function drawButtons() {
-    //previous button
-
     d3.select(svg).append("rect")
-        .attr("width", "100")
+        .attr("width", "90")
         .attr("height", "50")
         .attr("stroke", "black")
-        .attr("fill", 'white')
+        .attr("fill", 'black')
         .attr("x", 100)
-        .attr("y", 500)
-        .on("click", prev)
+        .attr("y", 495)
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .on("click", prevState)
     d3.select(svg).append('text')
         .attr('x', 125)
-        .attr('y', 530)
-        .on("click", prev)
+        .attr('y', 525)
+        .on("click", prevState)
+        .attr("fill", "white")
         .text('prev')
-    //current step display
-    d3.select(svg).append('text')
-        .attr('x', 250)
-        .attr('y', 530)
-        .text('Current Step: ' + curState)
-    //next button
     d3.select(svg).append("rect")
-        .attr("width", "100")
+        .attr("width", "90")
         .attr("height", "50")
         .attr("stroke", "black")
-        .attr("fill", 'white')
-        .attr("x", 400)
-        .attr("y", 500)
-        .on("click", next)
+        .attr("fill", 'black')
+        .attr("x", 210)
+        .attr("y", 495)
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .on("click", nextState)
     d3.select(svg).append('text')
-        .attr('x', 425)
-        .attr('y', 530)
-        .on("click", next)
+        .attr('x', 235)
+        .attr('y', 525)
+        .on("click", nextState)
+        .attr("fill", "white")
         .text('next')
-    }
+    d3.select(svg).append('text')
+        .attr('x', 325)
+        .attr('y', 525)
+        .attr("fill", "black")
+        .text('State: ' + curState)
+}
 
-function prev() {
+function prevState() {
     if (curState > 0) {
         curState -= 1
         d3.select(svg).selectAll("*").remove();
@@ -129,7 +137,7 @@ function prev() {
     }
 }
 
-function next() {
+function nextState() {
     console.log(states)
     if (curState < states.length-1) {
         curState += 1
