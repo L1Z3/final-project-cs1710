@@ -96,10 +96,16 @@ pred positiveWeights {
 
 pred wellformed {
     // at most one connection to any node
+    // (all n1, n2: Node | {
+    //     // WARNING: OVERFLOW CAN HAPPEN, ENSURE BITWIDTH IS GOOD
+    //     let numEdgesFromN1ToN2 = #{i: Int | n1 -> i -> n2 in edges} | {
+    //         numEdgesFromN1ToN2 = 0 or numEdgesFromN1ToN2 = 1
+    //     }
+    // })
+    // new way of writing this that causes fewer overflow issues
     (all n1, n2: Node | {
-        // WARNING: OVERFLOW CAN HAPPEN, ENSURE BITWIDTH IS GOOD
-        let numEdgesFromN1ToN2 = #{i: Int | n1 -> i -> n2 in edges} | {
-            numEdgesFromN1ToN2 = 0 or numEdgesFromN1ToN2 = 1
+        lone i: Int | {
+            n1 -> i -> n2 in edges
         }
     })
     // enforce that each path is a sequence

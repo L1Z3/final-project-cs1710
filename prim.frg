@@ -91,13 +91,17 @@ pred positiveWeights {
 
 pred wellformed {
     // at most one connection to any node
-    (all n1, n2: Node | {
-        // WARNING: OVERFLOW CAN HAPPEN, ENSURE BITWIDTH IS GOOD
-        let numEdgesFromN1ToN2 = #{i: Int | n1 -> i -> n2 in edges} | {
-            numEdgesFromN1ToN2 = 0 or numEdgesFromN1ToN2 = 1
+    // (all n1, n2: Node | {
+    //     // WARNING: OVERFLOW CAN HAPPEN, ENSURE BITWIDTH IS GOOD
+    //     let numEdgesFromN1ToN2 = #{i: Int | n1 -> i -> n2 in edges} | {
+    //         numEdgesFromN1ToN2 = 0 or numEdgesFromN1ToN2 = 1
+    //     }
+    // })
+    all n1, n2: Node | {
+        lone i: Int | {
+            n1 -> i -> n2 in edges
         }
-    })
-    // TODO: do we need to enforce that the edges_tree is a subset of the edges in the graph?
+    }
 }
 
 // determines whether there is an edge from n1 to n2
