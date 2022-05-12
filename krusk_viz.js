@@ -3,7 +3,6 @@ d3.selectAll("svg > *").remove();
 d3.select(svg).selectAll("*").remove();
 
 const listOfNodes = Node.atoms(true);
-const startNode = instance.atom('Traverse0').start
 const states = State.atoms(true);
 
 const xmap = new Map();
@@ -52,11 +51,7 @@ function getyPos(d) {
 }
 
 function color(d) {
-    if (startNode._id == d._id) {
-        return "#19eb0e";
-    } else {
-        return "#0495c2";
-    }
+    return "#0495c2";
 }
 
 function drawEdges() {
