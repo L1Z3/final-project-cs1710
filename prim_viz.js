@@ -131,7 +131,7 @@ function switchEdges() {
                     .append("text")
                     .attr("x", avgx)
                     .attr("y", avgy)
-                    .attr("fill", "#023f52")
+                    .attr("fill", "#82a7b3")
                     .text(len);
                 
             }
@@ -186,7 +186,7 @@ function outlines() {
                     .append("text")
                     .attr("x", avgx)
                     .attr("y", avgy)
-                    .attr("fill", "#023f52")
+                    .attr("fill", "#82a7b3")
                     .text(len);
                 
             }
